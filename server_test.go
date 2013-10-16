@@ -10,6 +10,7 @@ import (
 	"sync"
 	"syscall"
 	"testing"
+	"time"
 )
 
 var serverAddr string
@@ -39,6 +40,8 @@ func TestWebSocketBroadcaster(t *testing.T) {
 	q.Entities = []string{"ns/moo"}
 	t.Logf("Query filter: %+v", q)
 	websocket.JSON.Send(conn, q)
+
+	time.Sleep(300 * time.Millisecond)
 
 	e := straumur.NewEvent(
 		"myapp.user.login",
