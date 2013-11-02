@@ -6,6 +6,7 @@ go:
 
 install:
  - go get code.google.com/p/go.net/websocket
+ - go get github.com/howbazaar/loggo
  - go get github.com/straumur/straumur
 
 script:

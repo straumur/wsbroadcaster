@@ -2,9 +2,13 @@ package ws
 
 import (
 	"code.google.com/p/go.net/websocket"
+	"github.com/howbazaar/loggo"
 	"github.com/straumur/straumur"
-	"log"
 	"net/http"
+)
+
+var (
+	logger = loggo.GetLogger("straumur.websocket")
 )
 
 type Server struct {
@@ -56,7 +60,7 @@ func (s *Server) Err(err error) {
 
 func (s *Server) sendAll(event *straumur.Event) {
 	for _, c := range s.clients {
-		log.Printf("%+v", c.query)
+		logger.Debugf("%+v", c.query)
 		if c.query.Match(*event) {
 			c.Write(event)
 		}
@@ -91,22 +95,22 @@ func (s *Server) Run(ec chan error) {
 
 		// Add new a client
 		case c := <-s.addCh:
-			log.Println("Added new client")
+			logger.Debugf("Added new client")
 			s.clients[c.id] = c
-			log.Println("Now", len(s.clients), "clients connected.")
+			logger.Debugf("Now", len(s.clients), "clients connected.")
 
 		// del a client
 		case c := <-s.delCh:
-			log.Println("Delete client")
+			logger.Debugf("Delete client")
 			delete(s.clients, c.id)
 
 		// consume event feed
 		case event := <-s.events:
-			log.Println("Send all:", event)
+			logger.Debugf("Send all:", event)
 			s.sendAll(event)
 
 		case err := <-s.errCh:
-			log.Println("Error:", err.Error())
+			logger.Errorf("Error:", err.Error())
 			ec <- err
 
 		case <-s.doneCh:
